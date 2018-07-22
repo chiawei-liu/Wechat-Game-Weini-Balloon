@@ -8,6 +8,8 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 
+const Configs = require('LogicConfigs');
+
 cc.Class({
   extends: cc.Component,
   ctor: function () {
@@ -48,9 +50,7 @@ cc.Class({
     touchArea: {
       default: null,
       type: cc.Node
-    },
-    barrierInterval: 1100, // pixel
-    cycle: 2 // 2 seconds a cycle
+    }
   },
 
   // LIFE-CYCLE CALLBACKS:
@@ -58,9 +58,9 @@ cc.Class({
   // onLoad () {},
 
   start () {
-    this.barriers = this.createBarriers(200, this.currentDistance * this.barrierInterval);
+    this.barriers = this.createBarriers(200, this.currentDistance * Configs.barrierInterval);
     this.startStage();
-    // this.barriers.node.setPosition(0, this.barrierInterval * this.currentDistance);
+    // this.barriers.node.setPosition(0, Configs.barrierInterval * this.currentDistance);
   },
 
   // update (dt) {},
@@ -85,6 +85,7 @@ cc.Class({
 
   onTouch () {
     console.log('touch');
+    this.listeningTouch = false;
   },
 
   update (dt) {
@@ -93,9 +94,5 @@ cc.Class({
       this.timer %= this.cycle;
       this.balloon.scale = this.expandRate(this.timer);
     }
-  },
-
-  expandRate (time) {
-    return 2 + Math.sin(Math.PI * 2 * time / this.cycle);
   }
 });

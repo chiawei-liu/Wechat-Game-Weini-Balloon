@@ -86,12 +86,16 @@ cc.Class({
   onTouch () {
     console.log('touch');
     this.listeningTouch = false;
+    let radius = this.balloon.scale;
+    let forwardDistance = Configs.getForwardDistance(radius, this.currentDistance);
+    this.forwardAct = cc.moveBy(Configs.forwardDuration, cc.p(0, forwardDistance));
+    this.forwardAct.easing(Configs.forwardEase);
   },
 
   update (dt) {
     if (this.listeningTouch) {
       this.timer += dt;
-      this.timer %= this.cycle;
+      this.timer %= Configs.cycle;
       this.balloon.scale = this.expandRate(this.timer);
     }
   }

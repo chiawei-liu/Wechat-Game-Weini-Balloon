@@ -12,9 +12,10 @@ cc.Class({
   extends: cc.Component,
   ctor: function () {
     this.barriers = null;
-    this.currentDistance = 0.5; // 0~1 from the balloon to the barrier.
+    this.currentDistance = 1; // 0~1 from the balloon to the barrier.
     this.balloonScore = 1; // 1m
     this.barriersNode = null;
+    this.listeningTouch = false;
   },
   properties: {
     // foo: {
@@ -44,7 +45,12 @@ cc.Class({
       default: null,
       type: cc.Node
     },
-    barrierInterval: 1100 // pixel
+    touchArea: {
+      default: null,
+      type: cc.Node
+    },
+    barrierInterval: 1100, // pixel
+    cycle: 2 // 2 seconds a cycle
   },
 
   // LIFE-CYCLE CALLBACKS:
@@ -53,6 +59,7 @@ cc.Class({
 
   start () {
     this.barriers = this.createBarriers(200, this.currentDistance * this.barrierInterval);
+    this.startStage();
     // this.barriers.node.setPosition(0, this.barrierInterval * this.currentDistance);
   },
 
@@ -68,5 +75,27 @@ cc.Class({
     barriers.node.parent = this.front;
     barriers.node.setScale(this.balloon.scale);
     return barriers;
+  },
+
+  startStage () {
+    this.listeningTouch = true;
+    this.timer = 0;
+    this.touchArea.once(cc.Node.EventType.TOUCH_START, this.onTouch, this);
+  },
+
+  onTouch () {
+    console.log('touch');
+  },
+
+  update (dt) {
+    if (this.listeningTouch) {
+      this.timer += dt;
+      this.timer %= this.cycle;
+      this.balloon.scale = this.expandRate(this.timer);
+    }
+  },
+
+  expandRate (time) {
+    return 2 + Math.sin(Math.PI * 2 * time / this.cycle);
   }
 });

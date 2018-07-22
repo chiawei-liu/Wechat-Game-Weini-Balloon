@@ -9,44 +9,44 @@
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 
 const Barriers = cc.Class({
-    extends: cc.Component,
+  extends: cc.Component,
 
-    ctor: function (gap = 0, distance = 0) {
+  ctor: function (gap = 0, distance = 0) {
+    this._gap = gap;
+    this._distance = distance;
+  },
+
+  properties: {
+    gap: {
+      get: function () {
+        return this._gap;
+      },
+      set: function (gap) {
         this._gap = gap;
+        this.node.children[0].x = -gap / 2;
+        this.node.children[1].x = gap / 2;
+      }
+    },
+    distance: {
+      get: function () {
+        return this._distance;
+      },
+      set: function (distance) {
         this._distance = distance;
-    },
+        this.node.children[0].y = distance;
+        this.node.children[1].y = distance;
+      }
+    }
+  },
+  // LIFE-CYCLE CALLBACKS:
 
-    properties: {
-        gap: {
-            get: function () {
-                return this._gap;
-            },
-            set: function (gap) {
-                this._gap = gap;
-                this.node.children[0].x = -gap/2;
-                this.node.children[1].x = gap/2;
-            }
-        },
-        distance: {
-            get: () => {
-                return this._distance;
-            },
-            set: function(distance) {
-                this._distance = distance;
-                this.node.children[0].y = distance;
-                this.node.children[1].y = distance;
-            }
-        }
-    },
-    // LIFE-CYCLE CALLBACKS:
+  // onLoad () {},
 
-    // onLoad () {},
+  start () {
 
-    start () {
+  }
 
-    },
-
-    // update (dt) {},
+  // update (dt) {},
 
 });
 

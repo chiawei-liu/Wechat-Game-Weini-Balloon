@@ -8,8 +8,12 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 
-module.exports = cc.Class({
+cc.Class({
   extends: cc.Component,
+
+  ctor: function () {
+    this.forwardEase = cc.easeIn(3.0);
+  },
 
   properties: {
     // foo: {
@@ -29,7 +33,12 @@ module.exports = cc.Class({
     // },
     barrierInterval: 1100, // pixel
     cycle: 2, // 2 seconds a cycle
-    forwardDuration: 1.5  // 1.5 seconds
+    forwardDuration: 1.5,  // 1.5 seconds
+    forwardEase: {
+      default: null,
+      type: cc.ActionEase
+    },
+    scaleDuration: 1
   },
 
   // LIFE-CYCLE CALLBACKS:
@@ -41,8 +50,13 @@ module.exports = cc.Class({
   },
 
   expandRate (time) {
-    return 2 + Math.sin(Math.PI * 2 * time / this.cycle);
+    return 2 + Math.sin(Math.PI * 2 * (time / this.cycle + 1 / 4));
+  },
+  getForwardDistance (radius, currentDistance) {
+    return 1;
+  },
+  getGap () {
+    return 300;
   }
-
   // update (dt) {},
 });

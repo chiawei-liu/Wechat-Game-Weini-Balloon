@@ -8,16 +8,16 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 
-const Configs = require('LogicConfigs');
-
 cc.Class({
   extends: cc.Component,
+
   ctor: function () {
     this.barriers = null;
-    this.currentDistance = 1; // 0~1 from the balloon to the barrier.
+    this.currentDistance = 0.5; // 0~1 from the balloon to the barrier.
     this.balloonScore = 1; // 1m
     this.barriersNode = null;
     this.listeningTouch = false;
+    this.score = 1; // 1m originally
   },
   properties: {
     // foo: {
@@ -58,22 +58,30 @@ cc.Class({
   // onLoad () {},
 
   start () {
-    this.barriers = this.createBarriers(200, this.currentDistance * Configs.barrierInterval);
+    this.configs = this.node.getComponent('LogicConfigs');
+    this.barriers = this.createBarriers(this.front, 200, this.currentDistance * this.configs.barrierInterval);
+    this.previousBarriers = {
+      root: new cc.Node()
+    };
     this.startStage();
     // this.barriers.node.setPosition(0, Configs.barrierInterval * this.currentDistance);
   },
 
   // update (dt) {},
 
-  createBarriers (gap = 0, distance = 0) {
-    let barriers = {
+  createBarriers (parent = null, gap = 0, distance = 0) {
+    let barriers = this.node.getComponent('Barriers').instantiateBarriers(parent, gap, distance);
+    // let barriers = new Barriers(parent, gap, distance);
+    barriers.root.scale = this.balloon.scale;
+
+    /* let barriers = {
       node: cc.instantiate(this.barriersPrefab)
     }
     barriers.script = barriers.node.getComponent('Barriers');
     barriers.script.gap = gap;
     barriers.script.distance = distance;
     barriers.node.parent = this.front;
-    barriers.node.setScale(this.balloon.scale);
+    barriers.node.setScale(this.balloon.scale); */
     return barriers;
   },
 
@@ -87,16 +95,34 @@ cc.Class({
     console.log('touch');
     this.listeningTouch = false;
     let radius = this.balloon.scale;
-    let forwardDistance = Configs.getForwardDistance(radius, this.currentDistance);
-    this.forwardAct = cc.moveBy(Configs.forwardDuration, cc.p(0, forwardDistance));
-    this.forwardAct.easing(Configs.forwardEase);
+    let forwardDistance = this.configs.getForwardDistance(radius, this.currentDistance);
+    this.forwardAct = cc.moveBy(this.configs.forwardDuration, cc.p(0, -forwardDistance * this.configs.barrierInterval));
+    // this.forwardAct.easing(cc.easeIn(3.0));
+    this.nextBarriers = this.createBarriers(this.front, this.configs.getGap(), (this.currentDistance + 1) * this.configs.barrierInterval);
+
+    // this.forwardAct = cc.hide();
+    this.scaleAct = cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale);
+    let forwardActCallback = cc.callFunc(function (target) {
+      this.barriers.root.runAction(cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale));
+      this.nextBarriers.root.runAction(cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale));
+      this.balloon.runAction(cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale));
+    }, this);
+    let scaleActCallback = cc.callFunc(function (target) {
+      this.previousBarriers.root.destroy();
+      this.previousBarriers = this.barriers;
+      this.barriers = this.nextBarriers;
+      this.startStage();
+    }, this);
+    // this.barriers.pair.runAction(this.forwardAct);
+    this.nextBarriers.pair.runAction(cc.sequence(this.forwardAct, forwardActCallback), scaleActCallback);
+    this.barriers.runAction(cc.moveBy(this.configs.forwardDuration, cc.p(0, -forwardDistance * this.configs.barrierInterval)));
   },
 
   update (dt) {
     if (this.listeningTouch) {
+      this.balloon.scale = this.configs.expandRate(this.timer);
       this.timer += dt;
-      this.timer %= Configs.cycle;
-      this.balloon.scale = this.expandRate(this.timer);
+      this.timer %= this.configs.cycle;
     }
   }
 });

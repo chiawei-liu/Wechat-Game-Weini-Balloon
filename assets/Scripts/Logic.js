@@ -18,6 +18,7 @@ cc.Class({
     this.barriersNode = null;
     this.listeningTouch = false;
     this.score = 1; // 1m originally
+    this.shownScore = 1;
   },
   properties: {
     // foo: {
@@ -50,6 +51,10 @@ cc.Class({
     touchArea: {
       default: null,
       type: cc.Node
+    },
+    scoreRoot: {
+      default: null,
+      type: cc.Node
     }
   },
 
@@ -63,6 +68,7 @@ cc.Class({
     this.previousBarriers = {
       root: new cc.Node()
     };
+    this.scoreLabel = this.scoreRoot.children[0].getComponent('cc.Label');
     this.startStage();
     // this.barriers.node.setPosition(0, Configs.barrierInterval * this.currentDistance);
   },
@@ -99,28 +105,32 @@ cc.Class({
     this.forwardAct = cc.moveBy(this.configs.forwardDuration, cc.p(0, -forwardDistance * this.configs.barrierInterval));
     // this.forwardAct.easing(cc.easeIn(3.0));
     this.nextBarriers = this.createBarriers(this.front, this.configs.getGap(), (this.currentDistance + 1) * this.configs.barrierInterval);
-
-    // this.forwardAct = cc.hide();
     this.scaleAct = cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale);
-    let forwardActCallback = cc.callFunc(function (target) {
-      this.barriers.root.runAction(cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale));
-      this.nextBarriers.root.runAction(cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale));
-      this.balloon.runAction(cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale));
-    }, this);
     let scaleActCallback = cc.callFunc(function (target) {
       this.previousBarriers.root.destroy();
       this.previousBarriers = this.barriers;
       this.barriers = this.nextBarriers;
       this.startStage();
     }, this);
+    let forwardActCallback = cc.callFunc(function (target) {
+      this.barriers.root.runAction(cc.sequence(cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale), scaleActCallback));
+      this.nextBarriers.root.runAction(cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale));
+      this.balloon.runAction(cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale));
+      this.scoreRoot.runAction(cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale));
+    }, this);
     // this.barriers.pair.runAction(this.forwardAct);
-    this.nextBarriers.pair.runAction(cc.sequence(this.forwardAct, forwardActCallback), scaleActCallback);
-    this.barriers.runAction(cc.moveBy(this.configs.forwardDuration, cc.p(0, -forwardDistance * this.configs.barrierInterval)));
+    this.nextBarriers.pair.runAction(cc.sequence(this.forwardAct, forwardActCallback));
+    this.barriers.pair.runAction(cc.moveBy(this.configs.forwardDuration, cc.p(0, -forwardDistance * this.configs.barrierInterval)));
+
+    this.score = this.shownScore;
   },
 
   update (dt) {
     if (this.listeningTouch) {
       this.balloon.scale = this.configs.expandRate(this.timer);
+      this.shownScore = Math.round(this.score * this.configs.radiusToScoreScale(this.balloon.scale));
+      this.scoreRoot.scale = this.balloon.scale;
+      this.scoreLabel.string = this.shownScore + ' m';
       this.timer += dt;
       this.timer %= this.configs.cycle;
     }

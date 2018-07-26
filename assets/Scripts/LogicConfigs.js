@@ -50,13 +50,16 @@ cc.Class({
   },
 
   expandRate (time) {
-    return 2 + Math.sin(Math.PI * 2 * (time / this.cycle + 1 / 4));
+    return 2 + Math.sin(Math.PI * 2 * (time / this.cycle + 3 / 4));
   },
   getForwardDistance (radius, currentDistance) {
     return 1;
   },
   getGap () {
     return 300;
+  },
+  radiusToScoreScale (radius) {
+    return 1 + 9 * (radius - 1) / 2;
   }
   // update (dt) {},
 });

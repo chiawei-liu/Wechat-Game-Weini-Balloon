@@ -9,35 +9,36 @@
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 
 cc.Class({
-    extends: cc.Component,
-
-    properties: {
-        // foo: {
-        //     // ATTRIBUTES:
-        //     default: null,        // The default value will be used only when the component attaching
-        //                           // to a node for the first time
-        //     type: cc.SpriteFrame, // optional, default is typeof default
-        //     serializable: true,   // optional, default is true
-        // },
-        // bar: {
-        //     get () {
-        //         return this._bar;
-        //     },
-        //     set (value) {
-        //         this._bar = value;
-        //     }
-        // },
-    },
-
-    // LIFE-CYCLE CALLBACKS:
-
-    // onLoad () {},
-
-    start () {
-      // console.log("bu!");
-    },
-    onCollisionEnter: function(self, other) {
-      console.log("biu!");
+  extends: cc.Component,
+  properties: {
+    // foo: {
+    //     // ATTRIBUTES:
+    //     default: null,        // The default value will be used only when the component attaching
+    //                           // to a node for the first time
+    //     type: cc.SpriteFrame, // optional, default is typeof default
+    //     serializable: true,   // optional, default is true
+    // },
+    // bar: {
+    //     get () {
+    //         return this._bar;
+    //     },
+    //     set (value) {
+    //         this._bar = value;
+    //     }
+    // },
+    Logic: {
+      default: null,
+      type: cc.Node
     }
-    // update (dt) {},
+  },
+  // LIFE-CYCLE CALLBACKS:
+  // onLoad () {},
+  start () {
+    // console.log("bu!");
+    this.logicScript = this.Logic.getComponent('Logic');
+  },
+  onCollisionEnter: function(self, other) {
+    this.logicScript.gameOver();
+  }
+  // update (dt) {},
 });

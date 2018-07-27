@@ -136,5 +136,13 @@ cc.Class({
       this.timer += dt;
       this.timer %= this.configs.cycle;
     }
+  },
+
+  gameOver () {
+    this.listeningTouch = false;
+    this.front.stopAllActions();
+    this.nextBarriers.pair.stopAllActions();
+    this.barriers.pair.stopAllActions();
+    console.log('game over.');
   }
 });

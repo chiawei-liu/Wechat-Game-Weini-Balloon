@@ -70,6 +70,8 @@ cc.Class({
     };
     this.scoreLabel = this.scoreRoot.children[0].getComponent('cc.Label');
     this.startStage();
+
+    cc.director.getCollisionManager().enabled = true;
     // this.barriers.node.setPosition(0, Configs.barrierInterval * this.currentDistance);
   },
 

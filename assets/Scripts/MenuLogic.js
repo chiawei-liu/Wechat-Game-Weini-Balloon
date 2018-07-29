@@ -8,6 +8,8 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 
+const user = require('User');
+
 cc.Class({
   extends: cc.Component,
 
@@ -34,6 +36,10 @@ cc.Class({
     UI: {
       default: null,
       type: cc.Node
+    },
+    scoreLabel: {
+      default: null,
+      type: cc.Node
     }
   },
 
@@ -42,19 +48,32 @@ cc.Class({
 
   start () {
     cc.director.preloadScene('Game', function () {
-      cc.log("Next scene preloaded");
+      cc.log('Next scene preloaded');
     });
+    this.scoreLabel.children[1].getComponent('cc.Label').string = user.biggest_balloon + ' m';
   },
 
   startGame () {
-    console.log("aa");
     this.UI.runAction(cc.fadeTo(1, 0));
+    this.scoreLabel.runAction(cc.fadeTo(1, 0));
     this.front.runAction(cc.moveTo(2, 0, -500));
     let cameraMovedCallback = cc.callFunc(function (target) {
       cc.director.loadScene('Game');
     });
     this.front.runAction(cc.sequence(cc.scaleTo(2, 1), cameraMovedCallback));
-  }
+  },
 
-  // update (dt) {},
+  onLoad () {
+    if (!user.init) {
+      console.log('init user');
+      try {
+        user.onLoad();
+      } catch (error) {
+        user.login = false;
+        user.init = true;
+        user.money = 0
+        user.biggest_balloon = 1;
+      }
+    }
+  }
 });

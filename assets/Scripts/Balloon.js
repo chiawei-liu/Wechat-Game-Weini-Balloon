@@ -37,7 +37,7 @@ cc.Class({
     // console.log("bu!");
     this.logicScript = this.Logic.getComponent('Logic');
   },
-  onCollisionEnter: function(self, other) {
+  onCollisionEnter: function (self, other) {
     this.logicScript.gameOver();
   }
   // update (dt) {},

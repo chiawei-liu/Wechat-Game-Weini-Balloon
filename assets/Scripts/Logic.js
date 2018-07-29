@@ -7,6 +7,7 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
+const user = require('User');
 
 cc.Class({
   extends: cc.Component,
@@ -59,6 +60,10 @@ cc.Class({
     pooh: {
       default: null,
       type: cc.Node
+    },
+    UI: {
+      default: null,
+      type: cc.Node
     }
   },
 
@@ -76,6 +81,7 @@ cc.Class({
     this.startStage();
 
     cc.director.getCollisionManager().enabled = true;
+    this.UI.active = false;
     // this.barriers.node.setPosition(0, Configs.barrierInterval * this.currentDistance);
   },
 
@@ -149,7 +155,31 @@ cc.Class({
     this.front.stopAllActions();
     this.nextBarriers.pair.stopAllActions();
     this.barriers.pair.stopAllActions();
-    this.front.runAction(cc.sequence(cc.delayTime(0.5), cc.moveBy(1.5, 0, 500)));
+    let that = this;
+    let moveCallBack = cc.callFunc(function (target) {
+      that.UI.active = true;
+    });
+    // this.UI.runAction(cc.sequence(cc.delayTime(2), moveCallBack));
+    this.front.runAction(cc.sequence(cc.delayTime(0.5), cc.moveBy(1.5, 0, 500), moveCallBack));
     console.log('game over.');
+  },
+
+  backToMenu () {
+    console.log('back to menu');
+    user.biggest_balloon = this.score;
+    if (user.login) {
+      user.moneyPlus(0); // record the new highest
+    }
+    cc.director.loadScene('Menu');
+  },
+
+  continue () {
+    // not a complete function yet
+    if (user.money > 0) {
+      user.money -= 1;
+      if (user.login) {
+        user.buyUp(1);
+      }
+    }
   }
 });

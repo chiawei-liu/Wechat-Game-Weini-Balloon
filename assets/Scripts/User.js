@@ -1,4 +1,4 @@
-const user = class {
+const User = class {
   constructor () {
     this.init = false;
     this.login = false;
@@ -87,4 +87,5 @@ const user = class {
   }
 };
 
+const user = new User();
 module.exports = user;

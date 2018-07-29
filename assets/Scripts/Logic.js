@@ -64,6 +64,18 @@ cc.Class({
     UI: {
       default: null,
       type: cc.Node
+    },
+    moneyLabel: {
+      default: null,
+      type: cc.Node
+    },
+    thisBalloonLabel: {
+      default: null,
+      type: cc.Node
+    },
+    biggestLabel: {
+      default: null,
+      type: cc.Node
     }
   },
 
@@ -117,7 +129,7 @@ cc.Class({
     let forwardDistance = this.configs.getForwardDistance(radius, this.currentDistance);
     this.forwardAct = cc.moveBy(this.configs.forwardDuration, cc.p(0, -forwardDistance * this.configs.barrierInterval));
     // this.forwardAct.easing(cc.easeIn(3.0));
-    this.nextBarriers = this.createBarriers(this.front, this.configs.getGap(), (this.currentDistance + 1) * this.configs.barrierInterval);
+    this.nextBarriers = this.createBarriers(this.front, this.configs.getGap(this.currentDistance) * this.configs.gapBase, (this.currentDistance + 1) * this.configs.barrierInterval);
     this.scaleAct = cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale);
     let scaleActCallback = cc.callFunc(function (target) {
       this.previousBarriers.root.destroy();
@@ -141,7 +153,7 @@ cc.Class({
 
   update (dt) {
     if (this.listeningTouch) {
-      this.balloon.scale = this.configs.expandRate(this.timer);
+      this.balloon.scale = this.configs.expandRate(this.timer, this.currentDistance);
       this.shownScore = Math.round(this.score * this.configs.radiusToScoreScale(this.balloon.scale));
       this.scoreRoot.scale = this.balloon.scale;
       this.scoreLabel.string = this.shownScore + ' m';
@@ -158,18 +170,23 @@ cc.Class({
     let that = this;
     let moveCallBack = cc.callFunc(function (target) {
       that.UI.active = true;
+      that.moneyLabel.getComponent('cc.Label').string = user.money;
+      that.thisBalloonLabel.getComponent('cc.Label').string = that.score + ' m';
+      that.biggestLabel.getComponent('cc.Label').string = user.biggest_balloon + ' m';
     });
     // this.UI.runAction(cc.sequence(cc.delayTime(2), moveCallBack));
     this.front.runAction(cc.sequence(cc.delayTime(0.5), cc.moveBy(1.5, 0, 500), moveCallBack));
+    if (this.score > user.biggest_balloon) {
+      user.biggest_balloon = this.score;
+    }
+    if (user.login) {
+      user.moneyPlus(0); // record the new highest
+    }
     console.log('game over.');
   },
 
   backToMenu () {
     console.log('back to menu');
-    user.biggest_balloon = this.score;
-    if (user.login) {
-      user.moneyPlus(0); // record the new highest
-    }
     cc.director.loadScene('Menu');
   },
 

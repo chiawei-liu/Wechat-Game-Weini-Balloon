@@ -38,7 +38,8 @@ cc.Class({
       default: null,
       type: cc.ActionEase
     },
-    scaleDuration: 1
+    scaleDuration: 1,
+    gapBase: 300
   },
 
   // LIFE-CYCLE CALLBACKS:
@@ -49,14 +50,14 @@ cc.Class({
 
   },
 
-  expandRate (time) {
+  expandRate (time, currentDistance) {
     return 2 + Math.sin(Math.PI * 2 * (time / this.cycle + 3 / 4));
   },
   getForwardDistance (radius, currentDistance) {
     return 1;
   },
-  getGap () {
-    return 300;
+  getGap (currentDistance) {
+    return 1;
   },
   radiusToScoreScale (radius) {
     return 1 + 9 * (radius - 1) / 2;

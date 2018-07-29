@@ -39,7 +39,7 @@ cc.Class({
       type: cc.ActionEase
     },
     scaleDuration: 1,
-    gapBase: 300
+    gapBase: 177
   },
 
   // LIFE-CYCLE CALLBACKS:
@@ -51,19 +51,24 @@ cc.Class({
   },
 
   expandRate (time, currentDistance) {
-    return 2 + Math.sin(Math.PI * 2 * (time / this.cycle + 3 / 4));
+    // return 2 + Math.sin(Math.PI * 2 * (time / this.cycle + 3 / 4));
+    return 1.5 - 0.5 * Math.cos(Math.PI * time);
   },
   getForwardDistance (radius, currentDistance) {
-    return 1;
+    let rMin = 1.4 + 0.4 * (currentDistance - 0.7);
+    let rMax = 1.7 - 0.4 * (currentDistance - 0.7);
+    let distance = currentDistance + (Math.pow(radius, 2) - Math.pow(rMin, 2)) / (Math.pow(rMax, 2) - Math.pow(rMin, 2)) * (1 - currentDistance);
+    distance = 0.10 + currentDistance + 5.0 / 6.0 * (distance - currentDistance);
+    return distance;
   },
   getGap (currentDistance) {
-    return 1;
+    return (1.7 - 0.4 * (currentDistance - 0.7));
   },
   radiusToScoreScale (radius) {
-    return 1 + 9 * (radius - 1) / 2;
+    return 1 + 5 * (radius - 1) / 2;
   },
   radiusToPoohScale (radius) {
-    return 0.7;
+    return 1 - (radius - 1) * 0.3;
   }
   // update (dt) {},
 });

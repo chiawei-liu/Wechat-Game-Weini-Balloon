@@ -14,7 +14,7 @@ cc.Class({
 
   ctor: function () {
     this.barriers = null;
-    this.currentDistance = 0.6; // 0~1 from the balloon to the barrier.
+    this.currentDistance = 0.7; // 0~1 from the balloon to the barrier.
     this.balloonScore = 1; // 1m
     this.barriersNode = null;
     this.listeningTouch = false;
@@ -79,7 +79,7 @@ cc.Class({
 
   start () {
     this.configs = this.node.getComponent('LogicConfigs');
-    this.barriers = this.createBarriers(this.front, 200, this.currentDistance * this.configs.barrierInterval);
+    this.barriers = this.createBarriers(this.front, 177 * 1.7, this.currentDistance * this.configs.barrierInterval);
     this.previousBarriers = {
       root: new cc.Node()
     };

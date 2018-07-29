@@ -76,6 +76,18 @@ cc.Class({
     biggestLabel: {
       default: null,
       type: cc.Node
+    },
+    gameOverSound: {
+      default: null,
+      type: cc.Node
+    },
+    windBlowSound: {
+      default: null,
+      type: cc.Node
+    },
+    blowBalloonSound: {
+      default: null,
+      type: cc.Node
     }
   },
 
@@ -149,10 +161,15 @@ cc.Class({
     this.barriers.pair.runAction(cc.moveBy(this.configs.forwardDuration, cc.p(0, -forwardDistance * this.configs.barrierInterval)));
 
     this.score = this.shownScore;
+
+    this.windBlowSound.getComponent('cc.AudioSource').play();
   },
 
   update (dt) {
     if (this.listeningTouch) {
+      if (this.timer < 0.016) {
+        this.blowBalloonSound.getComponent('cc.AudioSource').play();
+      }
       this.balloon.scale = this.configs.expandRate(this.timer, this.currentDistance);
       this.shownScore = Math.round(this.score * this.configs.radiusToScoreScale(this.balloon.scale));
       this.scoreRoot.scale = this.balloon.scale;
@@ -163,6 +180,8 @@ cc.Class({
   },
 
   gameOver () {
+    this.gameOverSound.getComponent('cc.AudioSource').play();
+    this.windBlowSound.getComponent('cc.AudioSource').pause();
     this.listeningTouch = false;
     this.front.stopAllActions();
     this.nextBarriers.pair.stopAllActions();

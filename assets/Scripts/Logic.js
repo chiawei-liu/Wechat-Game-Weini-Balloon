@@ -21,22 +21,8 @@ cc.Class({
     this.score = 1; // 1m originally
     this.shownScore = 1;
   },
+
   properties: {
-    // foo: {
-    //     // ATTRIBUTES:
-    //     default: null,        // The default value will be used only when the component attaching
-    //                           // to a node for the first time
-    //     type: cc.SpriteFrame, // optional, default is typeof default
-    //     serializable: true,   // optional, default is true
-    // },
-    // bar: {
-    //     get () {
-    //         return this._bar;
-    //     },
-    //     set (value) {
-    //         this._bar = value;
-    //     }
-    // },
     balloon: {
       default: null,
       type: cc.Node
@@ -91,10 +77,6 @@ cc.Class({
     }
   },
 
-  // LIFE-CYCLE CALLBACKS:
-
-  // onLoad () {},
-
   start () {
     this.configs = this.node.getComponent('LogicConfigs');
     this.barriers = this.createBarriers(this.front, 200, this.currentDistance * this.configs.barrierInterval);
@@ -117,14 +99,6 @@ cc.Class({
     barriers.root.scale = this.balloon.scale;
     barriers.root.opacity = 0;
     barriers.root.runAction(cc.fadeTo(1, 255));
-    /* let barriers = {
-      node: cc.instantiate(this.barriersPrefab)
-    }
-    barriers.script = barriers.node.getComponent('Barriers');
-    barriers.script.gap = gap;
-    barriers.script.distance = distance;
-    barriers.node.parent = this.front;
-    barriers.node.setScale(this.balloon.scale); */
     return barriers;
   },
 

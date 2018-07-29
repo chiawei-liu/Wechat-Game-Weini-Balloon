@@ -73,7 +73,4 @@ const Barriers = cc.Class({
   runAction (act) {
     this.pair.runAction(act);
   }
-  // LIFE-CYCLE CALLBACKS:
-  // onLoad () {},
-  // update (dt) {},
 })

@@ -17,7 +17,7 @@ const user = class {
             data: {
               code: res.code
             },
-            method: "GET",
+            method: 'GET',
             success: function (response) {
               console.log('loginSucceed');
               console.log(response.data);
@@ -43,46 +43,46 @@ const user = class {
   moneyPlus (value) {
     let self = this;
     wx.request({
-        url: 'https://zengz16.iterator-traits.com/api/addMoney',
-        data: {
-            secret: self.secret,
-            money: self.money + value,
-            score: self.biggest_balloon
-        },
-        method: "GET",
-        success: function (res) {
-            if(res.statusCode === 200) {
-                self.money += value;
-                console.log('addMoney success');
-            }
-        },
-        fail: function () {
-            self.money += value;
-            console.log('addMoney failed');
+      url: 'https://zengz16.iterator-traits.com/api/addMoney',
+      data: {
+        secret: self.secret,
+        money: self.money + value,
+        score: self.biggest_balloon
+      },
+      method: 'GET',
+      success: function (res) {
+        if (res.statusCode === 200) {
+          self.money += value;
+          console.log('addMoney success');
         }
+      },
+      fail: function () {
+        self.money += value;
+        console.log('addMoney failed');
+      }
     });
   }
 
   buyUp (value) {
     let self = this;
     wx.request({
-        url: 'https://zengz16.iterator-traits.com/api/buy',
-        data: {
-            secret: self.secret,
-        },
-        method: "GET",
-        success: function(res){
-            console.log(res.data);
-            if(res.data.purchase === 'succeed'){
-                self.money -= value;
-                console.log('purchase succeed');
-            }else{
-                console.log('purchase failed!');
-            }
-        },
-        fail: function(){
-            console.log('wtf');
+      url: 'https://zengz16.iterator-traits.com/api/buy',
+      data: {
+        secret: self.secret
+      },
+      method: 'GET',
+      success: function (res) {
+        console.log(res.data);
+        if (res.data.purchase === 'succeed') {
+          self.money -= value;
+          console.log('purchase succeed');
+        } else {
+          console.log('purchase failed!');
         }
+      },
+      fail: function () {
+        console.log('wtf');
+      }
     });
   }
 };

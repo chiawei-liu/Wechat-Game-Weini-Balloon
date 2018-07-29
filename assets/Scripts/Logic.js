@@ -13,7 +13,7 @@ cc.Class({
 
   ctor: function () {
     this.barriers = null;
-    this.currentDistance = 0.5; // 0~1 from the balloon to the barrier.
+    this.currentDistance = 0.6; // 0~1 from the balloon to the barrier.
     this.balloonScore = 1; // 1m
     this.barriersNode = null;
     this.listeningTouch = false;
@@ -55,6 +55,10 @@ cc.Class({
     scoreRoot: {
       default: null,
       type: cc.Node
+    },
+    pooh: {
+      default: null,
+      type: cc.Node
     }
   },
 
@@ -81,7 +85,8 @@ cc.Class({
     let barriers = this.node.getComponent('Barriers').instantiateBarriers(parent, gap, distance);
     // let barriers = new Barriers(parent, gap, distance);
     barriers.root.scale = this.balloon.scale;
-
+    barriers.root.opacity = 0;
+    barriers.root.runAction(cc.fadeTo(1, 255));
     /* let barriers = {
       node: cc.instantiate(this.barriersPrefab)
     }
@@ -119,9 +124,10 @@ cc.Class({
       this.nextBarriers.root.runAction(cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale));
       this.balloon.runAction(cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale));
       this.scoreRoot.runAction(cc.scaleBy(this.configs.scaleDuration, 1 / this.balloon.scale));
+      this.pooh.scale *= this.configs.radiusToPoohScale(this.balloon.scale);
     }, this);
     // this.barriers.pair.runAction(this.forwardAct);
-    this.nextBarriers.pair.runAction(cc.sequence(this.forwardAct, forwardActCallback));
+    this.nextBarriers.pair.runAction(cc.sequence(this.forwardAct, cc.delayTime(0.1), forwardActCallback));
     this.barriers.pair.runAction(cc.moveBy(this.configs.forwardDuration, cc.p(0, -forwardDistance * this.configs.barrierInterval)));
 
     this.score = this.shownScore;
@@ -143,6 +149,7 @@ cc.Class({
     this.front.stopAllActions();
     this.nextBarriers.pair.stopAllActions();
     this.barriers.pair.stopAllActions();
+    this.front.runAction(cc.sequence(cc.delayTime(0.5), cc.moveBy(1.5, 0, 500)));
     console.log('game over.');
   }
 });

@@ -11,10 +11,6 @@
 cc.Class({
   extends: cc.Component,
 
-  ctor: function () {
-    this.forwardEase = cc.easeIn(3.0);
-  },
-
   properties: {
     // foo: {
     //     // ATTRIBUTES:
@@ -31,38 +27,34 @@ cc.Class({
     //         this._bar = value;
     //     }
     // },
-    barrierInterval: 1100, // pixel
-    cycle: 2, // 2 seconds a cycle
-    forwardDuration: 1.5,  // 1.5 seconds
-    forwardEase: {
+    front: {
       default: null,
-      type: cc.ActionEase
+      type: cc.Node
     },
-    scaleDuration: 1
+    UI: {
+      default: null,
+      type: cc.Node
+    }
   },
 
   // LIFE-CYCLE CALLBACKS:
-
   // onLoad () {},
 
   start () {
-
+    cc.director.preloadScene('Game', function () {
+      cc.log("Next scene preloaded");
+    });
   },
 
-  expandRate (time) {
-    return 2 + Math.sin(Math.PI * 2 * (time / this.cycle + 3 / 4));
-  },
-  getForwardDistance (radius, currentDistance) {
-    return 1;
-  },
-  getGap () {
-    return 300;
-  },
-  radiusToScoreScale (radius) {
-    return 1 + 9 * (radius - 1) / 2;
-  },
-  radiusToPoohScale (radius) {
-    return 0.7;
+  startGame () {
+    console.log("aa");
+    this.UI.runAction(cc.fadeTo(1, 0));
+    this.front.runAction(cc.moveTo(2, 0, -500));
+    let cameraMovedCallback = cc.callFunc(function (target) {
+      cc.director.loadScene('Game');
+    });
+    this.front.runAction(cc.sequence(cc.scaleTo(2, 1), cameraMovedCallback));
   }
+
   // update (dt) {},
 });
